@@ -86,6 +86,7 @@ SK.Model = class {
 
         // These are the assorted variables
         this.books = ['parchment', 'manuscript', 'compedium', 'blueprint'];
+        this.coreAlloys = ['steel', 'alloy', 'eludium'];
         this.option = {};
 
         // These control the selections under [Minor Options]
@@ -128,6 +129,7 @@ SK.Model = class {
     setDefaults() {
         this.option = {
             book: 'default',
+            coreAlloy: 'default',
             assign: 'smart',
             cycle: 'redmoon',
             minSecResRatio: 1,
@@ -254,6 +256,7 @@ SK.Gui = class {
             [this.autoSwitchButton('Auto Build', 'build'), this.autoButton('Select Building', '$(\'#SK_buildingOptions\').toggle();')],
             [this.autoSwitchButton('Auto Assign', 'assign'), this.autoDropdown('assign', ['smart'], game.village.jobs)],
             [this.autoSwitchButton('Auto Craft', 'craft'), this.autoDropdown('book', ['default'].concat(this.model.books), [])],
+            [this.autoDropdown('coreAlloy', ['default'].concat(this.model.coreAlloys), [])],
             ['<label style="{{grid}}">Secondary Craft %</label>',
                 `<span style="display:flex; justify-content:space-around; {{grid}}" title="Between 0 and 100">`
                 + `<label>min:</label><input id="SK_minSRS" type="text" style="width:25px" onchange="sk.model.option.minSecResRatio=this.value" value="${this.model.option.minSecResRatio}">`
@@ -757,7 +760,16 @@ SK.Tasks = class {
                     // for when our capacity gets large compared to production
                     minimumReserve = Math.min(minimumReserve, inVal * (this.model.option.minSecResRatio / 100) - outVal);
 
-                    if (this.model.books.includes(output) && this.model.option.book !== 'default') {
+                    if (this.model.coreAlloys.includes(output) && this.model.option.coreAlloy !== 'default') {
+                        // secondary resource: coal, iron, titanium, steel, unobtainium, alloy
+                        const outputIndex = this.model.coreAlloys.indexOf(output);
+                        const choiceIndex = this.model.coreAlloys.indexOf(this.model.option.coreAlloy);
+                        if (outputIndex > choiceIndex) {
+                            craftCount = 0;
+                            minimumReserve = 0;
+                            break;
+                        }
+                    } else if (this.model.books.includes(output) && this.model.option.book !== 'default') {
                         // secondary resource: fur, parchment, manuscript, compendium
                         const outputIndex = this.model.books.indexOf(output);
                         const choiceIndex = this.model.books.indexOf(this.model.option.book);
@@ -2478,6 +2490,7 @@ SK.Scripts = class {
                 this.model.minor.partyLimit = 1;
                 this.model.option.assign = 'hunter';
                 this.model.option.book = 'default';
+                this.model.option.coreAlloy = 'default';
                 this.model.option.minSecResRatio = 0.01;
                 this.state.push('build-start');
                 this.state.push('solar-start');
