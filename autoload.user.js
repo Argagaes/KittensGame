@@ -11,7 +11,7 @@
 // ==/UserScript==
 window.addEventListener("load", function() {
     var script=document.createElement('script');
-    script.src='https://raw.githubusercontent.com/MarsRool/KittensGame/master/ScriptKitties.js';
+    script.src='https://cdn.jsdelivr.net/gh/MarsRool/KittensGame/ScriptKitties.js';
     script.id='SK_origin';
     document.body.appendChild(script);
 }, false);
