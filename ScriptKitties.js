@@ -100,6 +100,7 @@ SK.Model = class {
             praiseAfter: 'Praise After Religion',
             unicornIvory: 'Unicorn Ivory Optimization',
             conserveExotic: 'Conserve Exotic Resources',
+            lowCatnipTrade: 'Always Trade with the Sharks when catnip is low',
             elderTrade: 'Always Trade with the Elders',
             autoFixCC: 'Auto use Flux to fix Cryo Chambers',
             permitReset: 'Permit Auto Play to Reset',
@@ -141,6 +142,7 @@ SK.Model = class {
             observe: true,
             conserveExotic: true,
             partyLimit: 10,
+            lowCatnipTrade: true,
             elderTrade: true,
         };
     }
@@ -1339,6 +1341,38 @@ SK.Tasks = class {
             let tradeLimit = 10000; // upper bound
             if (goldCost) tradeLimit = Math.min(tradeLimit, goldPerCycle, goldResource.value / goldCost);
             if (powerCost) tradeLimit = Math.min(tradeLimit, powerPerCycle, powerResource.value / powerCost);
+
+            // Always check catnip, if it's lower than 10%, trade with sharks
+            if (tradeLimit > 0 && this.model.minor.lowCatnipTrade) {
+                const sharks = game.diplomacy.get('sharks');
+                if (sharks.unlocked) {
+                    const catnipResource = game.resPool.get('catnip');
+                    if (catnipResource.value < catnipResource.maxValue * 0.1) {
+                        const sharksCellCatnip = sharks.sells.find((s) => s.name === 'catnip');
+
+                        const currentSeason = game.calendar.season;
+                        let catnipCoefficient = 1;
+                        if (sharksCellCatnip.seasons && sharksCellCatnip.seasons[currentSeason]) {
+                            catnipCoefficient += sharksCellCatnip.seasons[currentSeason];
+                        }
+                        catnipCoefficient += 1.03 + game.getEffect("tradeRatio") + game.prestige.getBurnedParagonRatio() * 0.03;
+
+                        const desiredTradeCatnipValue = catnipResource.maxValue * 0.8;
+                        const sharksCellCatnipValue = sharksCellCatnip.value * catnipCoefficient;
+                        let catnipTradeLimit = Math.min(tradeLimit, Math.ceil(desiredTradeCatnipValue / sharksCellCatnipValue));
+
+                        const ironRes = game.resPool.get('iron');
+                        const sharksTradeCost = sharks.buys.find((b) => b.name === 'iron').val;
+                        catnipTradeLimit = Math.min(catnipTradeLimit, Math.floor(ironRes.value / sharksTradeCost));
+
+                        if (catnipTradeLimit > 0) {
+                            game.diplomacy.tradeMultiple(sharks, catnipTradeLimit);
+                            tradeLimit = Math.floor(tradeLimit - catnipTradeLimit);
+                            traded = true;
+                        }
+                    }
+                }
+            }
 
             // Always Trade with the Elders enabled, trade max with them if possible
             if (tradeLimit > 0 && this.model.minor.elderTrade) {
