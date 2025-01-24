@@ -661,12 +661,12 @@ SK.Tasks = class {
          **/
         this.schedule = [
             // every tick
+			{fn:'autoCraft',    interval:1,  offset:0,   override:false},
             {fn:'autoNip',      interval:1,  offset:0,   override:false},
             {fn:'autoPraise',   interval:1,  offset:0,   override:false},
             {fn:'autoBuild',    interval:1,  offset:0,   override:false},
 
             // every 3 ticks == 0.6 seconds
-            {fn:'autoCraft',    interval:3,  offset:0,   override:false},
             {fn:'autoMinor',    interval:3,  offset:1,   override:false},
             {fn:'autoHunt',     interval:3,  offset:2,   override:false},
             {fn:'autoCraftAll', interval:3,  offset:0,   override:false},
@@ -701,7 +701,7 @@ SK.Tasks = class {
 
         // This function keeps track of the game's ticks and uses math to execute these functions at set times relative to the game.
         // Offsets are staggered to spread out the load. (Not that there is much).
-        this.runAllAutomation = setInterval(this.taskRunner.bind(this), 200);
+        this.runAllAutomation = setInterval(this.taskRunner.bind(this), 5);
     }
 
     halt() {
