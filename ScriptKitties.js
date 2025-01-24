@@ -444,6 +444,7 @@ SK.Gui = class {
                 + `</span>`
             ],
             [this.autoSwitchButton('Auto CraftAll', 'craftAll'), this.autoDropdown('craftAllMetal', ['steel', 'plate'], [])],
+            [this.toggleButton('Auto Tick', (state) => { sk.methods.autoTick(state); })],
             ['<span style="height:10px;{{grid}}"></span>'],
 
             [this.autoSwitchButton('Auto Hunt', 'hunt'), this.autoSwitchButton('Auto Praise', 'praise')],
