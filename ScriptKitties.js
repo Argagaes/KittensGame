@@ -604,6 +604,25 @@ SK.Gui = class {
         sk.scripts.init();
         if (this.model.auto.play) this.autoSwitch('play', 'SK_autoPlay');
     }
+	
+	toggleButton(label, toggleFunc, initialState = false, id = null) {
+		const element = id || `SK_${label.replace(/\s+/g, '_')}`;
+		const cssClass = `btn nosel modern ${initialState ? '' : 'disabled'}`;
+		const script = `sk.gui.toggleButtonState('${element}', ${toggleFunc})`;
+		const content = `<div class="btnContent" style="padding:unset"><span class="btnTitle">${label}</span></div>`;
+		const button = `<div id="${element}" class="${cssClass}" style="width:auto; {{grid}}" onclick="${script}">${content}</div>`;
+		return button;
+	}
+
+	toggleButtonState(element, toggleFunc) {
+		const currentState = !$(`#${element}`).hasClass('disabled');
+		const newState = !currentState;
+		
+		toggleFunc(newState);
+		
+		$(`#${element}`).toggleClass('disabled', !newState);
+		game.msg(`${element} is now ${(newState ? 'on' : 'off')}`);
+	}
 
     refresh() {
         for (const auto in this.switches) {
