@@ -898,7 +898,8 @@ SK.Tasks = class {
 
     // Auto praise the sun
     autoPraise(ticksPerCycle) {
-        if (this.model.auto.praise && game.resPool.get("faith").value > 0) {
+        let faith = game.resPool.get("faith");
+        if (this.model.auto.praise && (faith.value / faith.maxValue) > 0.95) {
             game.religion.praise();
         }
     }
@@ -1062,7 +1063,7 @@ SK.Tasks = class {
             const hunterRatio = game.getEffect("hunterRatio") + game.village.getEffectLeader("manager", 0);
             const expectedFurs = (catpower.value / 100) * (40 + 32.5 * hunterRatio);
 
-            if (catpower.value > (catpower.maxValue - 1) || expectedFurs > furs.value * 10) {
+            if (catpower.value > (catpower.maxValue - 1)) {
                 game.village.huntAll();
             }
         }
