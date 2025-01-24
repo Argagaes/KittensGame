@@ -313,6 +313,7 @@ SK.Model = class {
             minSecResRatio: 1,
             maxSecResRatio: 25,
             script: 'none',
+            craftAllMetal: 'steel',
         };
         this.minor = {
             // everything not specified defaults to false
@@ -442,6 +443,7 @@ SK.Gui = class {
                 + `<label>max:</label><input id="SK_maxSRS" type="text" style="width:25px" onchange="sk.model.option.maxSecResRatio=this.value" value="${this.model.option.maxSecResRatio}">`
                 + `</span>`
             ],
+            [this.autoSwitchButton('Auto CraftAll', 'craftAll'), this.autoDropdown('craftAllMetal', ['steel', 'plate'], [])],
             ['<span style="height:10px;{{grid}}"></span>'],
 
             [this.autoSwitchButton('Auto Hunt', 'hunt'), this.autoSwitchButton('Auto Praise', 'praise')],
@@ -647,6 +649,7 @@ SK.Tasks = class {
             {fn:'autoCraft',    interval:3,  offset:0,   override:false},
             {fn:'autoMinor',    interval:3,  offset:1,   override:false},
             {fn:'autoHunt',     interval:3,  offset:2,   override:false},
+            {fn:'autoCraftAll', interval:3,  offset:0,   override:false},
 
             // every 5 ticks == 1 second
             {fn:'autoPlay',     interval:5,  offset:0,   override:false},
@@ -1044,6 +1047,23 @@ SK.Tasks = class {
             }
         }
         return false; // we huntAll(), should never need to run again
+    }
+    
+    autoCraftAll(ticksPerCycle) {
+        if (this.model.auto.craftAll) {
+            let mats = [
+            { baseResource: game.resPool.get("catnip"), result: 'wood' },
+                { baseResource: game.resPool.get("wood"), result: 'beam' },
+                { baseResource: game.resPool.get("minerals"), result: 'slab' },
+                { baseResource: game.resPool.get("iron"), result: this.model.option.craftAllMetal }
+            ];
+            
+            mats.forEach((element) => {
+                if ((element.baseResource.value / element.baseResource.maxValue) > 0.95) {
+                    gamePage.craftAll(element.result);
+                }
+            });
+        }
     }
 
     /*** These scripts run every game day (2 seconds) ***/
