@@ -445,6 +445,7 @@ SK.Gui = class {
             ],
             [this.autoSwitchButton('Auto CraftAll', 'craftAll'), this.autoDropdown('craftAllMetal', ['steel', 'plate'], [])],
             [this.toggleButton('Auto Tick', (state) => { sk.methods.autoTick(state); })],
+			[this.autoSwitchButton('Auto PreCraft', 'preCraft'), this.autoButton('Load PreCraft', 'sk.methods.loadPreCraft()')],
             ['<span style="height:10px;{{grid}}"></span>'],
 
             [this.autoSwitchButton('Auto Hunt', 'hunt'), this.autoSwitchButton('Auto Praise', 'praise')],
@@ -679,6 +680,7 @@ SK.Tasks = class {
             {fn:'autoTime',     interval:10, offset:4,   override:false},
             {fn:'autoParty',    interval:10, offset:6,   override:false},
             {fn:'energyControl',interval:10, offset:8,   override:false},
+			{fn:'autoPreCraft', interval:5,  offset:0,   override:false},
 
             // every 4 seconds; schedule on odd numbers to avoid the interval:10
             {fn:'autoFlux',     interval:20, offset:1,   override:false},
@@ -1086,6 +1088,27 @@ SK.Tasks = class {
             });
         }
     }
+
+    autoPreCraft(ticksPerCycle) {
+		if (this.model.auto.preCraft) {
+			if (sk.preCraft) {
+				$('.precraftBar').each(function() {
+					const styleAttr = $(this).attr('style');
+					if (styleAttr && styleAttr.toString().includes('rgba(0, 255, 0,')) {
+						const precraftButton = $($(this).closest('div')[0].parentNode).siblings('.precraftBtn').find('a')[0];
+						if (precraftButton) {
+							precraftButton.click();
+						}
+					}
+				});
+			} else {
+				game.msg('Initialize the PreCraft script first!');
+				this.model.auto.preCraft = false;
+			}
+		}
+    }
+
+    
 
     /*** These scripts run every game day (2 seconds) ***/
 
@@ -3222,4 +3245,3 @@ if (game && game.bld) {
         sk = new SK();
     });
 }
-
