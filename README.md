@@ -6,10 +6,9 @@ Note: This was a fork from the script MaPaul1977 originally made with some modif
 Note: This is a _total_ overhaul of the above.
 
 ## How do I use the script?
-
 If you want to use this, you need to load it into the browser. The easiest way is to create a bookmarklet like the following, and run it after loading the game. However, Github doesn't like people using it as a hosting solution, so they've deliberately broken the ability to use it for that. However, [jsDelivr](https://www.jsdelivr.com/), offers a free CDN solution for GitHub repos, so you can use the follow.
 
-    javascript:(function(){var d=document,s=d.createElement('script');s.src='https://cdn.jsdelivr.net/gh/MarsRool/KittensGame/ScriptKitties.js';d.body.appendChild(s);})();
+    javascript:(function(){var d=document,s=d.createElement('script');s.src='https://cdn.jsdelivr.net/gh/Argagaes/KittensGame/ScriptKitties.js';d.body.appendChild(s);})();
 
 Alternatively, you can paste the contents of the script into the developer console. If you use TamperMonkey, or similar, you can use [autoload.user.js](autoload.user.js).
 
@@ -113,3 +112,5 @@ Thanks also go out to each of these reddit users for their help!
 - hughperman
 - dbsps
 - kbob
+- MarsRool
+- lyuhau
